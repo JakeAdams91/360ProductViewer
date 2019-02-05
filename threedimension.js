@@ -85,38 +85,28 @@ function update360(dir) {
 }
 
 // catches mouse events and calls necessary functions
-var mousePos, lastPos = mousePos
 canvas.addEventListener("mousedown", function (e) {
   clicked = true
-  lastPos = getMousePos(canvas, e)
 }, false)
 
 canvas.addEventListener("mousemove", function(e) {
-  mousePos = getMousePos(canvas, e)
-  mouseMoved(mousePos - lastPos)
+  mouseMoved()
 }, false)
 
 canvas.addEventListener("mouseup", function(e) {
   clicked = false
 })
 
-// gets move movement position
-function getMousePos(canvasDom, mouseEvent) {
-  let rect = canvasDom.getBoundingClientRect()
-  return mouseEvent.clientX - rect.left
-}
-
 // handles the scroll effect of the image viewer
-function mouseMoved(curr) {
+function mouseMoved() {
   if (clicked === true) {
-    // console.log(event.clientX)
-    let currentPos = curr
-    let absolute = Math.abs(currentPos)
-    if (absolute > 5) {
-      update360(currentPos / absolute)
-      // console.log('maths', currentPos / absolute)
-      currentPos = mousePos
-      // console.log('curr', currentPos)
+    let tracker = event.movementX
+    if (tracker > 0) {
+      let forward = 1
+      update360(forward)
+    } else if (tracker < 0) {
+      let reverse = -1
+      update360(reverse)
     }
   }
 }
