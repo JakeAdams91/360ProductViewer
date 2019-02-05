@@ -31,7 +31,7 @@ var ctx = canvas.getContext('2d')
 var imageSet = [],
     image = '',
     loaded = 0,
-    currentFrame = 0
+    currentFrame = 0,
     rotationInterval,
     startClick,
     clicked = false,
