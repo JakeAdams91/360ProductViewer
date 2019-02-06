@@ -29,18 +29,15 @@ var images = [
 var canvas = document.getElementById('canvas')
 var ctx = canvas.getContext('2d')
 var imageSet = [],
-    image = '',
     loaded = 0,
     currentFrame = 0,
-    rotationInterval,
-    startClick,
     clicked = false,
     totalFrames = images.length
 
 loadImages()
-// this function loads all received images to new imageSet
+// loads all received images to new imageSet
 function loadImages() {
-    image = new Image()
+    let image = new Image()
     image.src = images[loaded]
     image.onload = function() {
       loaded++
@@ -62,10 +59,10 @@ function drawImages() {
   img.src = imageSet[currentFrame]
 }
 
-// after Loading display imageset in full 360 rotation
+// onload do a twirl for everybody
 function start360() {
   update360(0)
-  rotationInterval = setInterval(() => {
+  let rotationInterval = setInterval(() => {
     if (currentFrame === totalFrames - 1) {
       clearInterval(rotationInterval)
     }
@@ -101,12 +98,13 @@ canvas.addEventListener("mouseup", function(e) {
 function mouseMoved() {
   if (clicked === true) {
     let tracker = event.movementX
+    let direction
     if (tracker > 0) {
-      let forward = 1
-      update360(forward)
+      direction = 1
+      update360(direction)
     } else if (tracker < 0) {
-      let reverse = -1
-      update360(reverse)
+      direction = -1
+      update360(direction)
     }
   }
 }
