@@ -179,15 +179,15 @@ function drawImages() {
 }
 
 // onload do a twirl for everybody
-// function start360() {
-//   update360(0)
-//   let rotationInterval = setInterval(() => {
-//     if (currentFrame === totalFrames - 1) {
-//       clearInterval(rotationInterval)
-//     }
-//     variableScrollSpeed(1)
-//   }, 15)
-// }
+function start360() {
+  update360(0)
+  let rotationInterval = setInterval(() => {
+    if (currentFrame === totalFrames - 1) {
+      clearInterval(rotationInterval)
+    }
+    variableScrollSpeed(1)
+  }, 15)
+}
 // if direction is -1 rotate clockwise, if direction is 1 rotate counter-clockwise
 
 // let time
@@ -215,7 +215,6 @@ function update360(dir, speed) {
   } else if (speed < 300) {
     int += quarterSpeed
   }
-
   if (int >= 360) {
     int = 0
   }
