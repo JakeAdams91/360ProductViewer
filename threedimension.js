@@ -149,9 +149,10 @@ var imageSet = [],
     currentFrame = 0,
     clicked = false,
     totalFrames = images.length,
+    oldDate,
     oldTime,
     originalPosition
-
+const division = 360 / totalFrames
 loadImages()
 // loads all received images to new imageSet
 function loadImages() {
@@ -160,7 +161,7 @@ function loadImages() {
     image.onload = function() {
       loaded++
       if (loaded === totalFrames) {
-        start360()
+        // start360()
       } else {
         loadImages()
       }
@@ -178,54 +179,74 @@ function drawImages() {
 }
 
 // onload do a twirl for everybody
-function start360() {
-  update360(0)
-  let rotationInterval = setInterval(() => {
-    if (currentFrame === totalFrames - 1) {
-      clearInterval(rotationInterval)
-    }
-    variableScrollSpeed(1)
-  }, 15)
-}
+// function start360() {
+//   update360(0)
+//   let rotationInterval = setInterval(() => {
+//     if (currentFrame === totalFrames - 1) {
+//       clearInterval(rotationInterval)
+//     }
+//     variableScrollSpeed(1)
+//   }, 15)
+// }
 // if direction is -1 rotate clockwise, if direction is 1 rotate counter-clockwise
+
+// let time
+// if (speed >= 200) {
+//   time = 100
+// } else if (speed >= 100) {
+//   time = 150
+// } else if (speed >= 50) {
+//   time = 300
+// } else {
+//   time = 400
+// }
+
+var int = 0
+var incre = 0.2
 var speedInterval
 function update360(dir, speed) {
-  let time
-  speedInterval = setInterval(variableScrollSpeed, speed, dir)
-  if (speed >= 200) {
-    time = 100
-  } else if (speed >= 100) {
-    time = 200
-  } else if (speed >= 50) {
-    time = 300
-  } else {
-    time = 500
+  let normalSpeed = division / 2
+  let halfSpeed = division / 6
+  let quarterSpeed = division / 10
+  if (speed > 500) {
+    int += normalSpeed
+  } else if (speed < 500) {
+    int += halfSpeed
+  } else if (speed < 300) {
+    int += quarterSpeed
   }
-  // speedyvoomvoom(time)
+
+  if (int >= 360) {
+    int = 0
+  }
+  variableScrollSpeed(dir, int)
 }
 
-var int = 0.00
-var incre = 0.5
-// variable speed function!!!!!! 
-function variableScrollSpeed (dir) {
-  int = int + incre
-  int = int.toFixed(2)
-  int = parseFloat(int)
-  // console.log(int)
-  
-  if (int - Math.floor(int) === 0) {
-    currentFrame += dir
-    int = 0.00
-    // console.log('NEW FRAME WHOOHOOHOHOHOHOHOOHO', currentFrame)
+// var int = 0.00
+// var incre = 0.5
+
+// variable speed function!!!!!!
+function variableScrollSpeed (dir, int) {
+  let math
+  if (dir < 0) {
+    let newMath
+    let newInt = int * 2
+    int -= newInt
+    math = Math.round(int / division)
+    console.log('old', math)
+    // currentFrame = math
   }
+  if (dir > 0) {
+    math = Math.round(int / division)
+    currentFrame = math
+  }
+  // currentFrame += dir
   if (currentFrame < 0) {
     currentFrame = totalFrames - 1
   } else if (currentFrame > totalFrames - 1) {
     currentFrame = 0
   }
   drawImages()
-  // clearInterval(speedInterval)
-  // let speedInterval = setInterval(toggleSpeed(dir, incre), 50)
 }
 
 // catches mouse events and calls necessary functions
@@ -234,9 +255,7 @@ canvas.addEventListener("mousedown", function (e) {
   initPositionTime(e)
 }, false)
 
-// 
 canvas.addEventListener("mousemove", function (e) {
-  // mouseMoved()
   getSpeed(e)
 }, false)
 
@@ -246,11 +265,9 @@ canvas.addEventListener("mouseup", function(e) {
 
 
 function initPositionTime(e) {
-  var oldDate = new Date()
+  oldDate = new Date()
   oldTime = oldDate.getTime()
   originalPosition = event.clientX
-  // console.log('start Pos', originalPosition)
-  // console.log('@click time', oldTime)
 }
 
 var tracker = Math.sign(0)
@@ -262,10 +279,19 @@ function getSpeed(e) {
     let difference
     let scrollPosition
     var distanceCovered
-
+    // if mouse direction changes; reset time and original position to keep accurate speed tracking.
     if (Math.sign(event.movementX) !== tracker) {
+      oldDate = new Date()
+      oldTime = oldDate.getTime()
       originalPosition = event.clientX
     }
+    /**
+    * HandleMouse()
+    * handles getting speed:
+    * current time - begin time = difference
+    * current mouse position - original position = distance
+    * distance / difference * 1000 = distance traveled per second.
+    */
     function handleMouse (e) {
       currTime = newDate.getTime()
       scrollPosition = event.clientX
@@ -273,11 +299,14 @@ function getSpeed(e) {
       distanceCovered = (scrollPosition - originalPosition)
       speed = (distanceCovered / difference) * 1000
       speed = Math.abs(Math.round(speed))
+      if (Number.isNaN(speed)) {
+        speed = 0
+      }
       // console.log('speed', speed)
     }
     let interval = setInterval(handleMouse(e), 50)
     tracker = Math.sign(event.movementX)
-    // update360(tracker)
+    
     clearInterval(interval)
     update360(tracker, speed)
   }
