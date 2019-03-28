@@ -145,34 +145,34 @@ var images = [
 var canvas = document.getElementById('canvas')
 var ctx = canvas.getContext('2d')
 var imageSet = [],
-    loaded = 0,
-    currentFrame = 0,
-    clicked = false,
-    totalFrames = images.length,
-    oldDate,
-    oldTime,
-    originalPosition
+  loaded = 0,
+  currentFrame = 0,
+  clicked = false,
+  totalFrames = images.length,
+  oldDate,
+  oldTime,
+  originalPosition
 const division = 360 / totalFrames
 loadImages()
 // loads all received images to new imageSet
 function loadImages() {
-    let image = new Image()
-    image.src = images[loaded]
-    image.onload = function() {
-      loaded++
-      if (loaded === totalFrames) {
-        // start360()
-      } else {
-        loadImages()
-      }
+  let image = new Image()
+  image.src = images[loaded]
+  image.onload = function () {
+    loaded++
+    if (loaded === totalFrames) {
+      // start360()
+    } else {
+      loadImages()
     }
-    imageSet[loaded] = image.src
+  }
+  imageSet[loaded] = image.src
 }
 
 // draws images on canvas
 function drawImages() {
   let img = new Image()
-  img.onload = function() {
+  img.onload = function () {
     ctx.drawImage(img, 0, 0)
   }
   img.src = imageSet[currentFrame]
@@ -190,16 +190,6 @@ function start360() {
 }
 // if direction is -1 rotate clockwise, if direction is 1 rotate counter-clockwise
 
-// let time
-// if (speed >= 200) {
-//   time = 100
-// } else if (speed >= 100) {
-//   time = 150
-// } else if (speed >= 50) {
-//   time = 300
-// } else {
-//   time = 400
-// }
 
 var int = 0
 var incre = 0.2
@@ -208,15 +198,20 @@ function update360(dir, speed) {
   let normalSpeed = division / 2
   let halfSpeed = division / 6
   let quarterSpeed = division / 10
+  let change = 0
   if (speed > 500) {
-    int += normalSpeed
+    change = normalSpeed
   } else if (speed < 500) {
-    int += halfSpeed
+    change = halfSpeed
   } else if (speed < 300) {
-    int += quarterSpeed
+    change = quarterSpeed
   }
+  console.log(dir * change)
+  int += dir * change
   if (int >= 360) {
-    int = 0
+    int = int % 360
+  } else if (int < 0) {
+    int += 360
   }
   variableScrollSpeed(dir, int)
 }
@@ -225,20 +220,21 @@ function update360(dir, speed) {
 // var incre = 0.5
 
 // variable speed function!!!!!!
-function variableScrollSpeed (dir, int) {
+function variableScrollSpeed(dir, int) {
   let math
-  if (dir < 0) {
-    let newMath
-    let newInt = int * 2
-    int -= newInt
-    math = Math.round(int / division)
-    console.log('old', math)
-    // currentFrame = math
-  }
-  if (dir > 0) {
-    math = Math.round(int / division)
-    currentFrame = math
-  }
+  math = Math.round(int / division)
+  currentFrame = math
+
+  // switch (dir) {
+  //   case -1:
+      
+  //     math = Math.round(int / division)
+  //     break;
+  //   case 1:
+  //     break;
+  //   default:
+  //     return
+  // }
   // currentFrame += dir
   if (currentFrame < 0) {
     currentFrame = totalFrames - 1
@@ -258,11 +254,12 @@ canvas.addEventListener("mousemove", function (e) {
   getSpeed(e)
 }, false)
 
-canvas.addEventListener("mouseup", function(e) {  
+canvas.addEventListener("mouseup", function (e) {
   clicked = false
 })
 
-
+// grabs initial position / time to get
+// speed and distances
 function initPositionTime(e) {
   oldDate = new Date()
   oldTime = oldDate.getTime()
@@ -271,7 +268,7 @@ function initPositionTime(e) {
 
 var tracker = Math.sign(0)
 function getSpeed(e) {
-  if(clicked === true) {
+  if (clicked === true) {
     let newDate = new Date()
     let speed
     let currTime
@@ -291,7 +288,7 @@ function getSpeed(e) {
     * current mouse position - original position = distance
     * distance / difference * 1000 = distance traveled per second.
     */
-    function handleMouse (e) {
+    function handleMouse(e) {
       currTime = newDate.getTime()
       scrollPosition = event.clientX
       difference = currTime - oldTime
@@ -301,31 +298,17 @@ function getSpeed(e) {
       if (Number.isNaN(speed)) {
         speed = 0
       }
-      // console.log('speed', speed)
     }
     let interval = setInterval(handleMouse(e), 50)
     tracker = Math.sign(event.movementX)
-    
+
     clearInterval(interval)
     update360(tracker, speed)
   }
 }
-// function handleSpeed(speed) {
-//   console.log('being called')
-//   let timer
-//   if (speed > 100) {
-//     timer = 10
-//   } else if ( speed < 100 ) {
-//     timer = 500
-//   }
-//   console.log(timer)
-//   // setInterval(update360(tracker), timer)
-// }
-
-// console.log(getspeed())
 // handles the scroll effect of the image viewer
 function mouseMoved() {
-  if (clicked === true) {    
+  if (clicked === true) {
     let tracker = event.movementX
     let direction
     if (tracker > 0) {
